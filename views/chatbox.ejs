@@ -32,7 +32,13 @@
             let userinfo = null;
             let socket = io.connect();
 
-            
+            function appendNewMessage(msg){
+                console.log(msg)
+                let div = document.createElement('div');
+                div.innerHTML = msg;
+                console.log(div);
+                $('.messageHistory').append(div);
+            }
 
             $(document).ready(function(){
                 $.get('/logeduserinfo',function(data,status){
@@ -43,17 +49,22 @@
                     };
                     socket.emit('new connection',{id: userinfo.id});
                     socket.on('new message',(data)=>{
-                        console.log(data);
+                        appendNewMessage(data.msg);
+                        // console.log(data);
                     })
                     data.activeChats.forEach(chat => {
-                        let div = document.createElement('div');
+                        let div = document.createElement('div');console.log(data);
                         div.innerHTML = chat.chatName
                         div.onclick = function(){
                             activeChatId = chat._id;
                             activeChatMembers = chat.chatMembers;
 
                             $.get(`/messages/${chat._id}`, function(data, status){
-                                console.log(data);
+                                const {messages} = data;
+                                messages.forEach((message) => {
+                                    // console.log(message.message);
+                                    appendNewMessage(message.message)
+                                })
                             });
                         }
                         $('.ongoingchats').append(div);
@@ -66,7 +77,9 @@
                 $('input').keydown(function(e){
                     e.keyCode === 13 && socket.emit('new message',{
                         msg: $(this).val(),
-                        members: activeChatMembers
+                        members: activeChatMembers,
+                        chatID: activeChatId,
+                        sender: userinfo._id,
                     }) && $(this).val('');
                 });
             

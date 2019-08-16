@@ -3,10 +3,9 @@ const app = express()
 const http = require('http')
 const server = http.Server(app);
 const bodyParser = require('body-parser');
-const socketIO = require('socket.io');
-const io = socketIO(server);
+const socket = require('./socket.io')(server);
 const path = require('path');
-const port = 8000;
+const port = 3000;
 const session = require('express-session');
 const MongooseStore = require('connect-mongo')(session);
 const passport = require('passport');
@@ -21,8 +20,6 @@ let m = new message({
 })
 
 m.save()
-
-let connected = {};
 //---------------Express Middleware--------------------//
 // app.use(cookie());
 app.use('/', express.static(path.join(__dirname,'public','javascript')));
@@ -66,35 +63,7 @@ app.use('/', require('./routes'));
 
 //----------------- End ----------------//
 
-io.on('connection', function(socket){
-    console.log('connected');
 
-    socket.on('new connection', function(user){
-        connected[user.id] = socket.id;
-        console.log(connected)
-    })
-
-    // socket.on('disconnect', function(){
-    //     console.log('disconected');
-    //     let keys = Object.keys(connected);
-    //     keys.forEach((value) => {
-    //         if(connected[keys] === socket.id){
-    //             delete connected[keys];
-    //         }
-    //     })
-    // })
-
-    socket.on('new message', function(data){
-        console.log(data)
-        data.members.forEach(element => {
-            console.log(element, connected[element])
-            connected[element] && io.to(connected[element]).emit('new message',data);
-        });
-        // console.log(connected[data['Rid']])
-        // io.to(connected[data['Rid']]).emit('new message', data.msg)
-    })
-
-});
 
 
 

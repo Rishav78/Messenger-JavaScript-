@@ -4,11 +4,11 @@ let messageSchema = new mongoose.Schema({
     sender: {
         type: String,
     },
-    msg: {
+    message: {
         type: String,
     }
 },{
     timestamps: true
 });
 
-module.exports = mongoose.model('message', messageSchema);
+module.exports = mongoose.model('messages', messageSchema);

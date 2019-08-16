@@ -1,0 +1,39 @@
+body{
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+.chatbox{
+    height: 100%;
+    display: flex;
+}
+.ongoing{
+    width: 350px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+.chatscreen{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #eeee;
+}
+.ongoingchats{
+    flex: 1;
+}
+.ongoingchats > div{
+    user-select: none;
+    cursor: pointer;
+    padding: 6px 15px;
+    margin: 2px 1px;
+    background-color: #eeee;
+    
+}
+.messageHistory{
+    flex: 1;
+}
+.input > input{
+    width: 100%;
+    padding: 8px 12px;
+}

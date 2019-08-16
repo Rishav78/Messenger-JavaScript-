@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="/chatbox.css">
+    </head>
+    <body>
+        <div class="chatbox">
+            <div class="ongoing">
+                <div class="header">
+                    <a href="/searchnewfriend">
+                        <span>add friend</span>
+                    </a>
+                </div>
+                <div class="ongoingchats">
+
+                </div>
+            </div>
+            <div class="chatscreen">
+                <div class="messageHistory">
+
+                </div>
+                <div class="input">
+                    <input type="text" />
+                </div>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let activeChatId = null;
+            let activeChatMembers = [];
+            let userinfo = null;
+            let socket = io.connect();
+
+            
+
+            $(document).ready(function(){
+                $.get('/logeduserinfo',function(data,status){
+                    userinfo = {
+                        id: data._id,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                    };
+                    socket.emit('new connection',{id: userinfo.id});
+                    socket.on('new message',(data)=>{
+                        console.log(data);
+                    })
+                    data.activeChats.forEach(chat => {
+                        let div = document.createElement('div');
+                        div.innerHTML = chat.chatName
+                        div.onclick = function(){
+                            activeChatId = chat._id;
+                            activeChatMembers = chat.chatMembers;
+
+                            $.get(`/messages/${chat._id}`, function(data, status){
+                                console.log(data);
+                            });
+                        }
+                        $('.ongoingchats').append(div);
+                    });
+                });
+            });
+
+
+            
+                $('input').keydown(function(e){
+                    e.keyCode === 13 && socket.emit('new message',{
+                        msg: $(this).val(),
+                        members: activeChatMembers
+                    }) && $(this).val('');
+                });
+            
+
+        </script>
+    </body>
+</html>

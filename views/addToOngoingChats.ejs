@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="availableFriends">
+
+        </div>
+        <button></button>
+        <script>
+
+            let selected = [];
+
+            function createCheckbox(id){
+                let checkbox = document.createElement('input');
+                checkbox.setAttribute('type','checkbox');
+                checkbox.setAttribute('value', id);
+                return checkbox;
+            }
+
+            $(document).ready(function(){
+                $.get('/friends',function(data, status){
+                    data.friends.forEach(user => {
+                        let div = document.createElement('div');
+                        let checkbox = createCheckbox(user._id);
+                        div.appendChild(checkbox);
+                        // div.innerHTML =`${user.firstName} ${user.lastName}`;
+                        $('.availableFriends').append(div);
+                    });
+                    $('input').change(function(){
+                        console.log(this)
+                        this.checked ?
+                            selected.push($(this).val()) :
+                            selected = selected.filter((value) => {
+                                return value != $(this).val();
+                            });
+                    })
+                });
+
+                
+
+            });
+            $('button').click(function(){
+                let req = new XMLHttpRequest();
+                req.onload = () => {
+
+                }
+                req.open('POST', '/addtoongoing');
+                req.setRequestHeader("Content-Type", "application/json");
+                req.send(JSON.stringify({
+                    chatType: 0,
+                    chatName: 'rishav',
+                    Members: selected,
+                }))
+            })
+        </script>
+    </body>
+</html>

@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <style>
+            body > div > div{
+                cursor: pointer;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="available">
+            
+        </div>
+        <script>
+            $(document).ready(function(){
+                $.post('/searchnewfriend',
+                {
+                    search: '',
+                },
+                function(data, status){
+                    data.forEach(user => {
+                        let div = document.createElement('div');
+                        div.innerHTML = user.firstName + ' ' + user.lastName;
+                        div.onclick = function(e){
+                            $.post('/friends',
+                            {
+                                friendId: user._id,
+                            },
+                            function(data, status){
+                                console.log(data);
+                            });
+
+
+                            $(this).fadeOut(function(){
+                                $(this).remove();
+                            });
+                        }
+                        $('.available').append(div);
+                    });
+                });
+            });
+
+
+        </script>
+    </body>
+</html>

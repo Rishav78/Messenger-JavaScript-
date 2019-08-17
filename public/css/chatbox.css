@@ -17,8 +17,10 @@ body{
 .header i:hover{
     opacity: 0.7;
 }
-.profilepic{
+.username{
     flex: 1;
+    margin: 0px 12px;
+    box-sizing: border-box;
 }
 img{
     width: 40px;
@@ -54,7 +56,7 @@ img{
     align-items: center;
 }
 .dp{
-    margin-right: 12px;
+    margin-right:12px;
 }
 .messageHistory{
     flex: 1;

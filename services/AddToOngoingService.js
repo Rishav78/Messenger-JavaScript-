@@ -5,7 +5,7 @@ const chat = require('../model/chats');
 function addToOngoing(req, res){
     const user = req.user._id;
     let {chatName, chatType, Members} = req.body;
-    console.log(Members);
+    // console.log(Members);
     let chatMembers = [...Members,user];
     console.log(chatMembers);
     let query = {
@@ -15,14 +15,11 @@ function addToOngoing(req, res){
     chatName && (query.chatName = chatName);
     let newchat = new chat(query);
     chat.find({
-        chatMembers: {
-            $in : chatMembers,
-        }
+        chatMembers: chatMembers
     })
         .then((chats) => {
-            chats.length === 0 || chats.filter((chat) =>{
-                return chat.chatMembers.length === chatMembers.length
-            }).length === 0 ?
+            console.log(chats)
+            chats.length === 0 || chatType === 1 ?
                 newchat.save(function(err){
                     if(err) throw err;
                     users.updateMany({

@@ -11,6 +11,9 @@
                     <div class="profilepic">
                         <img src="/download.png" />
                     </div>
+                    <div class="username">
+                        
+                    </div>
                     <div>
                         <a href="/ongoing">
                             <i class="material-icons">
@@ -98,11 +101,11 @@
                     };
                     socket.emit('new connection',{id: userinfo.id});
                     socket.on('new message',(data)=>{
-                        console.log(data.chatID === activeChatId)
                         data.chatID === activeChatId && appendNewMessage(data.message, data.userinfo.firstName + ' ' + data.userinfo.lastName);
                         $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
 
                     })
+                    $(`<span> ${userinfo.firstName} ${userinfo.lastName} </span>`).appendTo('.username');
                     data.activeChats.forEach((chat,i) => {
                         appendNewChat(chat);
                     });

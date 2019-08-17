@@ -31,6 +31,10 @@ module.exports = (server) => {
                 connected[element._id] && io.to(connected[element._id]).emit('new message',data);
             });
         })
-    
+
+        socket.on('new chat', function(chat){
+            services.addToOngoing.addToOngoing(chat);
+        })
+
     });
 }

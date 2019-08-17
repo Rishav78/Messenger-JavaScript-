@@ -1,33 +1,100 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>
+            .availableFriends{
+                display: flex;
+                flex-direction: column;
+            }
+            .availableFriends .user{
+                padding: 8px 12px;
+            }
+            .availableFriends .user:hover{
+                background-color: #f2f2f2;
+            }
+            .user > label{
+                display: inline-flex;
+                align-items: center;
+            }
+            .button, .username{
+               padding: 0px 10px; 
+            }
+            .username{
+                flex: 1;
+            }
+            .username > span{
+                font-size: 18px;
+                font-family: sans-serif;
+                color: #333;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            input{
+                width: 0;
+                height: 0;
+                display: none;
+            }
+            .slider{
+                width: 50px;
+                height: 25px;
+                background-color: #eee;
+                display: inline-block;
+                padding: 5px;
+                position: relative;
+                border-radius: 30px;
+                transition: .5s;
+                cursor: pointer;
+                /* box-sizing: border-box; */
+            }
+            .slider::before{
+                display: inline-block;
+                position: absolute;
+                content: "";
+                width: 25px;
+                height: 25px;;
+                background-color: white;
+                border-radius: 30px;
+                transition: .5s;
+            }
+            input:checked + .slider::before{
+                transform: translateX(100%);
+            }
+            input:checked + .slider{
+                background-color: darkturquoise;
+            }
+        </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body>
         <div class="availableFriends">
-
+            
         </div>
-        <button></button>
+        <button>start chat</button>
+        <script src="/socket.io/socket.io.js"></script>
         <script>
-
+            let socket = io.connect();
             let selected = [];
 
-            function createCheckbox(id){
-                let checkbox = document.createElement('input');
-                checkbox.setAttribute('type','checkbox');
-                checkbox.setAttribute('value', id);
-                return checkbox;
+            function createFriend(id, name){
+                $(`<div class="user">
+                    <label>
+                        <div class="button">
+                            <input type="checkbox" value=${id} />
+                            <span class="slider"></span>
+                        </div>
+                        <div class="username">
+                            <span>
+                                ${name}
+                            </span>
+                        </div>
+                    </label>
+                </div>`).appendTo('.availableFriends')
             }
 
             $(document).ready(async function(){
                 await $.get('/friends',function(data, status){
                     data.friends.forEach(user => {
-                        let div = document.createElement('div');
-                        let checkbox = createCheckbox(user._id);
-                        let text = document.createTextNode(user.firstName + ' ' + user.lastName);
-                        div.appendChild(checkbox);
-                        div.appendChild(text);
-                        $('.availableFriends').append(div);
+                        createFriend(user._id,user.firstName + ' ' + user.lastName);
                     });
                 });
                 $('input').change(function(){
@@ -40,19 +107,23 @@
                 })
             });
             $('button').click(function(){
-                let chatName = selected.length > 1 && prompt('Enter Chat Name');
-                let req = new XMLHttpRequest();
-                req.onload = () => {
-                    let res = JSON.parse(req.responseText);
-                    !res.success && alert('you are already on chat with this user');
+                if(selected.length > 0){
+                    let chatName = selected.length > 1 && prompt('Enter Chat Name');
+                    let req = new XMLHttpRequest();
+                    req.onload = () => {
+                        let res = JSON.parse(req.responseText);
+                        !res.success && alert('you are already on chat with this user');
+                    }
+                    req.open('POST', '/addtoongoing');
+                    req.setRequestHeader("Content-Type", "application/json");
+                    req.send(JSON.stringify({
+                        chatName,
+                        chatType: selected.length === 1 ? 0 : 1,
+                        Members: selected,
+                    }))
+                }else{
+                    alert('select atleast one friend to chat');
                 }
-                req.open('POST', '/addtoongoing');
-                req.setRequestHeader("Content-Type", "application/json");
-                req.send(JSON.stringify({
-                    chatName,
-                    chatType: selected.length === 1 ? 0 : 1,
-                    Members: selected,
-                }))
             })
         </script>
     </body>

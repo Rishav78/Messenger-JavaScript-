@@ -19,38 +19,38 @@
                 return checkbox;
             }
 
-            $(document).ready(function(){
-                $.get('/friends',function(data, status){
+            $(document).ready(async function(){
+                await $.get('/friends',function(data, status){
                     data.friends.forEach(user => {
                         let div = document.createElement('div');
                         let checkbox = createCheckbox(user._id);
+                        let text = document.createTextNode(user.firstName + ' ' + user.lastName);
                         div.appendChild(checkbox);
-                        // div.innerHTML =`${user.firstName} ${user.lastName}`;
+                        div.appendChild(text);
                         $('.availableFriends').append(div);
                     });
-                    $('input').change(function(){
-                        console.log(this)
-                        this.checked ?
-                            selected.push($(this).val()) :
-                            selected = selected.filter((value) => {
-                                return value != $(this).val();
-                            });
-                    })
                 });
-
-                
-
+                $('input').change(function(){
+                    console.log(this)
+                    this.checked ?
+                        selected.push($(this).val()) :
+                        selected = selected.filter((value) => {
+                            return value != $(this).val();
+                        });
+                })
             });
             $('button').click(function(){
+                let chatName = selected.length > 1 && prompt('Enter Chat Name');
                 let req = new XMLHttpRequest();
                 req.onload = () => {
-
+                    let res = JSON.parse(req.responseText);
+                    !res.success && alert('you are already on chat with this user');
                 }
                 req.open('POST', '/addtoongoing');
                 req.setRequestHeader("Content-Type", "application/json");
                 req.send(JSON.stringify({
-                    chatType: 0,
-                    chatName: 'rishav',
+                    chatName,
+                    chatType: selected.length === 1 ? 0 : 1,
                     Members: selected,
                 }))
             })

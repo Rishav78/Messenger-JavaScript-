@@ -1,41 +1,164 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <style>
+            body{
+                padding: 0;
+                margin: 0;
+            }
+            .form{
+                display: flex;
+                height: 100vh;
+                justify-content: center;
+                align-items: center;
+                background-color: #eee;
+            }
+            .form > form{
+                min-width: 300px;
+            }
+            .textfield{
+                border-top: 1px solid rgba(0,0,0,0.3);
+                border-bottom: 1px solid rgba(0,0,0,0.3);
+                padding: 3px 8px;
+                position: relative;
+                width: 100%;
+                margin-top: 12px;
+                box-sizing: border-box;
+            }
+            .title{
+                position: absolute;
+            }
+            .title span{
+                transition: 0.2s;
+                color: rgba(0,0,0,0.5);
+            }
+            .textfield input{
+                border: none;
+                background-color: transparent;
+                outline: none;
+                padding-top: 15px;
+                margin-left: 8px;
+                box-sizing: border-box;
+                font-size: 18px;
+                width: 100%;
+            }
+            .empty .title{
+                font-size: 20px;
+                margin-top: 7px;
+            }
+            .focus .title{
+                font-size: 12px;
+            }
+            button{
+                border: none;
+                padding: 12px 17px;
+                float: right;
+                margin-top: 12px;
+                color: #333;
+                transition: 0.5s;
+                cursor: pointer;
+            }
+            button:hover{
+                background-color: white;
+            }
+        </style>
     </head>
     <body>
-        <form action="/signup" method="POST">
-            <input 
-                type="text"
-                name="phone"
-                placeholder="phone no"
-            />
-
-            <input 
-                type="text"
-                name="firstName"
-                placeholder="firstname"
-            />
-            <input 
-                type="text"
-                name="lastName"
-                placeholder="lastname"
-            />
-
-            <input 
-                type="password"
-                name="password"
-                placeholder="password"
-            />
-
-            <input 
-                type="password"
-                name="confirmPassword"
-                placeholder="confirmPassword"
-            />
-            <button>
-                Signup
-            </button>
-        </form>
+        <div class="form">
+            <form action="/signup" method="POST">
+                <div class="textfield empty">
+                    <div class="title">
+                        <span>
+                            Phone no
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        name="phone"
+                        onFocus="handleInputFocus(event)"
+                        onBlur="handleInputBlur(event)"
+                        required
+                    />
+                </div>
+                <div class="textfield empty">
+                    <div class="title">
+                        <span>
+                            Firstname
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        name="firstName"
+                        onFocus="handleInputFocus(event)"
+                        onBlur="handleInputBlur(event)"
+                        required
+                    />
+                </div>
+                <div class="textfield empty">
+                    <div class="title">
+                        <span>
+                            Lastname
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        name="lastName"
+                        onFocus="handleInputFocus(event)"
+                        onBlur="handleInputBlur(event)"
+                        required
+                    />
+                </div>
+                <div class="textfield empty">
+                    <div class="title">
+                        <span>
+                            Password
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        name="password"
+                        onFocus="handleInputFocus(event)"
+                        onBlur="handleInputBlur(event)"
+                        required
+                    />
+                </div>
+                <div class="textfield empty">
+                    <div class="title">
+                        <span>
+                            Confirm Password
+                        </span>
+                    </div>
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        onFocus="handleInputFocus(event)"
+                        onBlur="handleInputBlur(event)"
+                        required
+                    />
+                </div>
+                <button>Signup</button>
+            </form>
+        </div>
     </body>
     <script src="/login.js"></script>
+    <script>
+
+        handleInputBlur = (e) => {
+            let value = e.target.value;
+            let title = e.target.parentElement;
+            if(!value){
+                title.classList.remove('focus');
+                title.classList.add('empty');
+            }
+        }
+
+        handleInputFocus = (e) => {
+            let title = e.target.parentElement;
+            if(title.classList.contains('empty')){
+                title.classList.remove('empty');
+            }
+            title.classList.add('focus');
+        }
+
+    </script>
 </html>

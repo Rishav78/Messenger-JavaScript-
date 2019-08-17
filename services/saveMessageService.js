@@ -2,6 +2,7 @@ const chat = require('../model/chats');
 const messages = require('../model/messages');
 
 function saveMessage(message, chatID, sender){
+    console.log(sender);
     const newMessage = new messages({
         sender,
         message,

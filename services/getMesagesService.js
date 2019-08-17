@@ -5,8 +5,17 @@ function getMessages(req, res){
     chat.findOne({
         _id: chatid,
     },{messages: 1})
-        .populate('messages')
-        .populate('Members')
+        .populate({
+            path: 'messages',
+            populate: {
+                path: 'sender',
+                select: {
+                    firstName: 1,
+                    lastName: 1,
+                },
+                
+            },
+        })
         .then((messages) => {
             console.log(messages);
             res.json(messages);

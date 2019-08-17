@@ -13,17 +13,11 @@ const mongoose = require('./model/db');
 const User = require('./model/users');
 const cookie = require('cookie-parser');
 const message = require('./model/messages');
-
-let m = new message({
-    sender: "rishav",
-    msg: "rishav"
-})
-
-m.save()
 //---------------Express Middleware--------------------//
 // app.use(cookie());
 app.use('/', express.static(path.join(__dirname,'public','javascript')));
 app.use('/', express.static(path.join(__dirname,'public','css')));
+app.use('/', express.static(path.join(__dirname,'public','images')));
 app.use(express.json()); //A new body object containing the parsed data is populated on the request object after the middleware (i.e. req.body).
 app.use(express.urlencoded({extended: true})); 
 // app.use(require('cors')({

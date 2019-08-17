@@ -3,6 +3,28 @@ body{
     padding: 0;
     margin: 0;
 }
+.header{
+    display: flex;
+    padding: 12px 15px;
+    background-color: #eee;
+    margin: 0px 1px;
+    align-items: center;
+}
+.header i{
+    margin: 0px 14px;
+    color: #333;
+}
+.header i:hover{
+    opacity: 0.7;
+}
+.profilepic{
+    flex: 1;
+}
+img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
 .chatbox{
     height: 100%;
     display: flex;
@@ -28,10 +50,25 @@ body{
     padding: 6px 15px;
     margin: 2px 1px;
     background-color: #eeee;
-    
+    display: flex;
+    align-items: center;
+}
+.dp{
+    margin-right: 12px;
 }
 .messageHistory{
     flex: 1;
+    overflow: scroll;
+}
+.messageHistory > div{
+    display: flex;
+    padding: 10px;
+}
+.messageHistory > div:nth-child(odd){
+    background-color: white;
+}
+.sender{
+    padding: 0px 12px;
 }
 .input > input{
     width: 100%;

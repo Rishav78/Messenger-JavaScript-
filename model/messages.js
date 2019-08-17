@@ -2,7 +2,8 @@ const mongoose = require('./db');
 
 let messageSchema = new mongoose.Schema({
     sender: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
     },
     message: {
         type: String,

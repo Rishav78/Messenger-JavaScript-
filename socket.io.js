@@ -25,10 +25,10 @@ module.exports = (server) => {
         })
     
         socket.on('new message', function(data){
-            const {msg, chatID, sender} = data;
-            services.saveMessage.saveMessage(msg, chatID, sender);
+            const {message, chatID, userinfo} = data;
+            services.saveMessage.saveMessage(message, chatID, userinfo.id);
             data.members.forEach(element => {
-                connected[element] && io.to(connected[element]).emit('new message',data);
+                connected[element._id] && io.to(connected[element._id]).emit('new message',data);
             });
         })
     

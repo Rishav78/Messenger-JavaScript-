@@ -21,6 +21,9 @@ let userSchema = new mongoose.Schema({
     phone: {
         type: String,
     },
+    status: {
+        type: Number,
+    }
 },{
     timestamps: true
 });

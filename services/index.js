@@ -7,6 +7,7 @@ const ongoingChats = require('./OngoingChatsServices');
 const getMessages = require('./getMesagesService');
 const logedUserInfo = require('./logedUserInfoService');
 const saveMessage = require('./saveMessageService');
+const updateUserStatus = require('./updateUserStatusServices');
 
 module.exports = {
     LoginService,
@@ -18,4 +19,5 @@ module.exports = {
     getMessages,
     logedUserInfo,
     saveMessage,
+    updateUserStatus,
 }

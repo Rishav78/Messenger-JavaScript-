@@ -1,8 +1,8 @@
 let users = require('../model/users');
 
 function SignupServices(req, res){
-    let {firstName, lastName, password, phone} = req.body;
-    console.log(req.body);
+    const {firstName, lastName, password, phone} = req.body;
+    const status = 0;
     users.find({
         phone
     })
@@ -16,6 +16,7 @@ function SignupServices(req, res){
                     lastName,
                     password,
                     phone,
+                    status,
                 });
                 newUser.save((err, insertedUser) => {
                     if(err) res.json({error: true});

@@ -17,6 +17,7 @@ function getOngoingChats(req, res){
                 select: {
                     firstName: 1,
                     lastName: 1,
+                    status: 1,
                 }
             },
         })

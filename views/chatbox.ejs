@@ -34,6 +34,26 @@
                 </div>
             </div>
             <div class="chatscreen">
+                <div class="chatSCreenHeader">
+                    <div class="dp">
+                        <img src="/download.png" />
+                    </div>
+                    <div>
+                        <div>
+                            <span class="chatOwner">
+                                rishav
+                            </span>
+                        </div>
+                        <div class="chatOwnerStatus">
+                            <span class="online">
+                                online
+                            </span>
+                            <span class="typing">
+                                typing....
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="messageHistory">
 
                 </div>
@@ -44,104 +64,6 @@
         </div>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            let activeChatId = null;
-            let activeChatMembers = [];
-            let userinfo = null;
-            let socket = io.connect();
-
-
-            //append new message
-            function appendNewMessage(message, user){
-                let div = document.createElement('div');
-                $(`<div class="sender">
-                        <span>
-                            ${user}:
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            ${message}
-                        </span>
-                    </div>`).appendTo(div);
-                $('.messageHistory').append(div);
-            }
-
-            //append new chat to the screen
-            function appendNewChat(chat){
-                let div = document.createElement('div');
-                let name = chat.chatMembers.filter((member) => {
-                    return member._id != userinfo.id;
-                })[0];
-
-                $(`<div class="dp"> <img src="/download.png" /> </div>
-                <div> ${!chat.chatType ? name.firstName + ' ' + name.lastName : chat.chatName} </div>`)
-                    .appendTo(div);
-
-                div.onclick = function(){
-                    if(activeChatId !== chat._id){
-                        activeChatId = chat._id;
-                        activeChatMembers = chat.chatMembers;
-                        $('.selectedChat').removeClass('selectedChat');
-                        $(div).addClass('selectedChat');
-                        $('.messageHistory').empty();
-                        $.get(`/messages/${chat._id}`, function(data, status){
-                            const {messages} = data;
-                            messages.forEach((message) => {
-                                appendNewMessage(message.message, message.sender.firstName + ' ' + message.sender.lastName)
-                            })
-                            console.log($('.messageHistory')[0].scrollHeight)
-                            $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
-                        });
-                    }
-                }
-
-                return $('.ongoingchats').append(div);
-            }
-
-
-
-            //get and append login user info
-            $(document).ready(function(){
-                $.get('/logeduserinfo',function(data,status){
-                    userinfo = {
-                        id: data._id,
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                    };
-                    socket.emit('new connection',{id: userinfo.id});
-                    socket.on('new message',(data)=>{
-                        data.chatID === activeChatId && appendNewMessage(data.message, data.userinfo.firstName + ' ' + data.userinfo.lastName);
-                        $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
-
-                    })
-                    $(`<span> ${userinfo.firstName} ${userinfo.lastName} </span>`).appendTo('.username');
-                });
-            });
-
-            // get and append chats
-            $(document).ready(function(){
-                $.get('/ongoingchats', function(chats, status){
-                    chats.forEach(chat => {
-                        appendNewChat(chat);
-                    });
-                })
-            });
-            
-            //listen for input change
-            $(document).ready(function(){
-                $('input').keydown(function(e){
-                    console.log(userinfo);
-                    e.keyCode === 13 && socket.emit('new message',{
-                        message: $(this).val(),
-                        members: activeChatMembers,
-                        chatID: activeChatId,
-                        userinfo,
-                    }) && $(this).val('');
-                });
-            })
-            
-
-        </script>
+        <script src="/chatbox.js" ></script>
     </body>
 </html>

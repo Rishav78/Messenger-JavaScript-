@@ -7,7 +7,10 @@ let messageSchema = new mongoose.Schema({
     },
     message: {
         type: String,
-    }
+    },
+    status: {
+        type: Number,
+    },
 },{
     timestamps: true
 });

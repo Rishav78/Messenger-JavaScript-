@@ -2,9 +2,8 @@ const users = require('../model/users');
 const mongoose = require('../model/db');
 const chat = require('../model/chats');
 
-function addToOngoing(req, res){
-    const user = req.user._id;
-    let {chatName, chatType, Members} = req.body;
+function addToOngoing(chatInfo){
+    const {chatName, chatType, Members, user} = chatInfo;
     // console.log(Members);
     let chatMembers = [...Members,user];
     console.log(chatMembers);
@@ -17,8 +16,7 @@ function addToOngoing(req, res){
     chat.find({
         chatMembers: chatMembers
     })
-        .then((chats) => {
-            console.log(chats)
+        .then((chats) => 
             chats.length === 0 || chatType === 1 ?
                 newchat.save(function(err){
                     if(err) throw err;
@@ -30,14 +28,15 @@ function addToOngoing(req, res){
                         }
                     })
                     .then((result) => {
-                        res.json({
+                        return({
                             success: true,
                         })
                     })
                 }) :
-                res.json({success: false});
-        })
-}
+                new Promise(function(resolve,reject){
+                    setTimeout(resolve({success: false}),0);
+                }))
+            }
 
 module.exports = {
     addToOngoing,

@@ -74,7 +74,7 @@
         <script>
             let socket = io.connect();
             let selected = [];
-
+            let useinfo = null;
             function createFriend(id, name){
                 $(`<div class="user">
                     <label>
@@ -90,6 +90,16 @@
                     </label>
                 </div>`).appendTo('.availableFriends')
             }
+
+            $(document).ready(function(){
+                $.get('/logeduserinfo',function(data,status){
+                    userinfo = {
+                        id: data._id,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                    };
+                });
+            });
 
             $(document).ready(async function(){
                 await $.get('/friends',function(data, status){
@@ -109,21 +119,18 @@
             $('button').click(function(){
                 if(selected.length > 0){
                     let chatName = selected.length > 1 && prompt('Enter Chat Name');
-                    let req = new XMLHttpRequest();
-                    req.onload = () => {
-                        let res = JSON.parse(req.responseText);
-                        !res.success && alert('you are already on chat with this user');
-                    }
-                    req.open('POST', '/addtoongoing');
-                    req.setRequestHeader("Content-Type", "application/json");
-                    req.send(JSON.stringify({
+                    socket.emit('new chat',{
                         chatName,
                         chatType: selected.length === 1 ? 0 : 1,
                         Members: selected,
-                    }))
+                        user: userinfo.id,
+                    })
                 }else{
                     alert('select atleast one friend to chat');
                 }
+            })
+            socket.on('new chat',function(res){
+                !res.success && alert('you are already on chat with this user');
             })
         </script>
     </body>

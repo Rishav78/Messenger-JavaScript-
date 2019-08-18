@@ -55,6 +55,14 @@ img{
     display: flex;
     align-items: center;
 }
+.ongoingchats > div:hover{
+    opacity: 0.9;
+    box-shadow: 1px 1px 5px #333;
+}
+.selectedChat{
+    background-color: #333 !important;
+    color: white !important;
+}
 .dp{
     margin-right:12px;
 }

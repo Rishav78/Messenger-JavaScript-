@@ -33,7 +33,7 @@ module.exports = (server) => {
         })
 
         socket.on('new chat', function(chat){
-            services.addToOngoing.addToOngoing(chat);
+            console.log(services.addToOngoing.addToOngoing(chat));
         })
 
     });

@@ -10,7 +10,7 @@ let userSchema = new mongoose.Schema({
     password: {
         type: String
     },
-    friends: [{
+    friends: [{    
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
     }],

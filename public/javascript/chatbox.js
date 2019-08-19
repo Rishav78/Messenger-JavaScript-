@@ -3,8 +3,12 @@ let userinfo = null;
 let socket = io.connect();
 let activeChatMember = null;
 let typing = false;
+let end = false;
+let page = 0;
+let noOfRecords = parseInt(window.innerHeight / 18);
+
 //append new message
-function appendNewMessage(message, user){
+function appendNewMessage(message, user, cb){
     let div = document.createElement('div');
     $(`<div class="sender">
             <span>
@@ -16,7 +20,25 @@ function appendNewMessage(message, user){
                 ${message}
             </span>
         </div>`).appendTo(div);
-    $('.messageHistory').append(div);
+    cb(div);
+}
+
+async function getMessages(id){
+    await $.post(`/messages`,{
+        chatid: id,
+        page,
+        noOfRecords,
+    },function(data, status){
+        const {messages} = data;
+        if(messages.length === 0){
+            end = true;
+            return;
+        }
+        messages.forEach((message) => {
+            let msg = message.message, user = message.sender.firstName + ' ' + message.sender.lastName;
+            appendNewMessage(msg, user, (div) => $('.messageHistory').prepend(div))
+        });
+    });
 }
 
 //append new chat to the screen
@@ -30,14 +52,11 @@ function appendNewChat(chat){
     <div> ${!chat.chatType ? name[0].firstName + ' ' + name[0].lastName : chat.chatName} </div>`)
         .appendTo(div);
 
-    div.onclick = function(){ 
-        // console.log(chat);
-        // let chatInfo = {};
+    div.onclick = async function(){ 
         if(activeChat.id !== chat._id){
             // uppdate chat info
             activeChat = chat;
             activeChat.receiver = name;
-            console.log()
             // update chatscreen header
             console.log(name)
             $('.chatOwner').html(!chat.chatType ? name[0].firstName + ' ' + name[0].lastName : chat.chatName);
@@ -52,14 +71,8 @@ function appendNewChat(chat){
             $('.messageHistory').empty();
 
             //get messages
-            $.get(`/messages/${chat._id}`, function(data, status){
-                const {messages} = data;
-                messages.forEach((message) => {
-                    appendNewMessage(message.message, message.sender.firstName + ' ' + message.sender.lastName)
-                })
-                
-                $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
-            });
+            await getMessages(chat._id);
+            $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
         }
     }
 
@@ -78,7 +91,8 @@ $(document).ready(async function(){
         };
         socket.emit('new connection',{id: userinfo.id});
         socket.on('new message',(data)=>{
-            data.chatID === activeChat._id && appendNewMessage(data.message, data.userinfo.firstName + ' ' + data.userinfo.lastName);
+            let msg = data.message, user = data.userinfo.firstName + ' ' + data.userinfo.lastName;
+            data.chatID === activeChat._id && appendNewMessage(msg, user, (div) => $('.messageHistory').append(div));
             $('.messageHistory').scrollTop($('.messageHistory')[0].scrollHeight);
 
         })
@@ -103,7 +117,7 @@ function emitTyping(status){
 }
 
 //listen for input change
-$(document).ready(function(){
+$(document).ready(function(){     
     $('input').keydown(function(e){
         !typing && emitTyping(1) && (typing = !typing);
 
@@ -120,6 +134,14 @@ $(document).ready(function(){
         emitTyping(0);
         typing = !typing;
     })
+})
+
+$('.messageHistory').scroll(function(){
+    if(!end && $('.messageHistory').scrollTop() === 0){
+        page++;
+        getMessages(activeChat._id);
+        $('.messageHistory').scrollTop(30);
+    }
 })
 
 socket.on('online', function(data){

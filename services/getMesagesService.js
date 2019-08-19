@@ -1,12 +1,20 @@
 const chat = require('../model/chats');
 
 function getMessages(req, res){
-    let chatid = req.params.id;
+    console.log(req.body)
+    const {chatid, page, noOfRecords} = req.body;
     chat.findOne({
         _id: chatid,
     },{messages: 1})
         .populate({
             path: 'messages',
+            options: {
+                sort: {
+                    createdAt: -1,
+                },
+                skip: page*noOfRecords,
+                limit: noOfRecords,
+            },
             populate: {
                 path: 'sender',
                 select: {

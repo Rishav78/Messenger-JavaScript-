@@ -45,6 +45,7 @@ img{
 }
 .ongoingchats{
     flex: 1;
+    overflow: scroll;
 }
 .ongoingchats > div{
     user-select: none;

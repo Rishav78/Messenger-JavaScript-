@@ -44,15 +44,14 @@ module.exports = (server) => {
     
         socket.on('new message', function(data){
             const {message, chatID, userinfo, members} = data;
-            console.log(members)
             services.saveMessage.saveMessage(message, chatID, userinfo.id);
             members.forEach(element => {
+                console.log(connected[element._id]);
                 connected[element._id] && io.to(connected[element._id]).emit('new message',data);
             });
         })
 
         socket.on('typing', function(data){
-            // console.log(data)
             data.receiver.forEach((user) => {
                 socket.to(connected[user._id]).emit('typing', {
                     chatID: data.chatID,
@@ -62,7 +61,17 @@ module.exports = (server) => {
         });
 
         socket.on('new chat', function(chat){
-            console.log(services.addToOngoing.addToOngoing(chat));
+            services.addToOngoing.addToOngoing(chat)
+             .then((res) => {
+                 chat.Members.forEach((value) => {
+                     socket.to(connected[value]).emit('new chat',res.success ? {
+                        success: true,
+                        chat: res.chat,
+                     }:{
+                        success: false,
+                     })
+                 })
+             })
         })
 
         socket.on('open chat', function(chat){

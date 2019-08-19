@@ -117,6 +117,7 @@
                 })
             });
             $('button').click(function(){
+                console.log(selected)
                 if(selected.length > 0){
                     let chatName = selected.length > 1 && prompt('Enter Chat Name');
                     socket.emit('new chat',{
@@ -130,6 +131,7 @@
                 }
             })
             socket.on('new chat',function(res){
+                console.log(res);
                 !res.success && alert('you are already on chat with this user');
             })
         </script>

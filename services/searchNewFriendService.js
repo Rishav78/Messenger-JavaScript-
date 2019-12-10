@@ -4,6 +4,7 @@ function buildQuery(req, frnds) {
     const { phone } = req.user;
     const { search } = req.body;
     const { friends } = frnds;
+    console.log(phone, search, frnds);
     const query = [
         {
             'phone': {
@@ -22,7 +23,7 @@ function buildQuery(req, frnds) {
 
 exports.searchNewFriend = async (req, res) => {
     const { _id } = req.user;
-    const friends = users.findById(_id , { friends: 1 });
+    const friends = await users.findById(_id , { friends: 1 });
     const query = buildQuery(req, friends);
     const usrs =  await users.find({ '$and': query }, {
         firstName:1,

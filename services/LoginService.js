@@ -11,3 +11,9 @@ exports.login = async (req, res) => {
         return res.redirect('/chatbox');
     });
 }
+
+exports.status = async (req, res) => {
+    const { _id } = req.user;
+    const status = await users.findById(_id, { status: 1 });
+    return status.status;
+}

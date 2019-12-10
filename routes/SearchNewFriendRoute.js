@@ -1,7 +1,13 @@
 let router = require('express').Router();
+const auth = require('../auth/auth');
 let controllers = require('../controllers');
 
-router.post('/', controllers.searchNewFriend.searchNewFriend);
-router.get('/', controllers.searchNewFriend.serveAddFriendPage);
+router.post('/', 
+        auth.isAuthenticated(),
+        controllers.searchNewFriend.searchNewFriend);
+
+router.get('/', 
+        auth.isAuthenticated(),
+        controllers.searchNewFriend.serveAddFriendPage);
 
 module.exports = router;

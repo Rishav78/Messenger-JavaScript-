@@ -7,27 +7,25 @@ module.exports = (server) => {
     let connected = {};
 
     io.on('connection', function(socket){
-        console.log('connected');
-    
-        socket.on('new connection', function(user){
-            connected[user.id] = socket.id;
-            console.log(user.id);
-            services.updateUserStatus.updateUserStatus(user.id, 1)
-                .then((res) => {
-                    if(res.success){
-                        socket.broadcast.emit('online',{
-                            user: user.id,
-                            status: 1,
-                        });
-                    }
-                })
+
+        socket.on('new connection', async (user) => {
+            const { id } = user;
+            connected[id] = socket.id;
+            const res = await services.updateUserStatus.updateUserStatus(id, 1)
+            if(res.success){
+                socket.broadcast.emit('online',{
+                    user: user.id,
+                    status: 1,
+                });
+                console.log('connected');
+            }
             console.log(connected)
         })
     
         socket.on('disconnect', function(){
-            console.log('disconected');
             let keys = Object.keys(connected);
-            keys.forEach((value) => {
+            for(let i=0;i<keys.length;i++) {
+                const value = keys[i];
                 if(connected[value] === socket.id){
                     services.updateUserStatus.updateUserStatus(value, 0)
                         .then((res) => {
@@ -36,28 +34,28 @@ module.exports = (server) => {
                                     user: value,
                                     status: 0,
                                 });
+                                console.log('disconected');
                             }
                         })
                     delete connected[keys];
+                    break;
                 }
-            });
+            }
         })
     
         socket.on('new message', (data) => {
-            const {message, chatID, userinfo, members} = data;
+            const { message, chatID, userinfo, members } = data;
             services.saveMessage.saveMessage(message, chatID, userinfo.id);
             members.forEach(element => {
-                console.log(element._id, connected[element._id]);
-                connected[element._id] && io.to(connected[element._id]).emit('new message',data);
+                const user = connected[element._id];
+                if(user) io.to(user).emit('new message', data);
             });
         })
 
         socket.on('typing', function(data){
             data.receiver.forEach((user) => {
-                socket.to(connected[user._id]).emit('typing', {
-                    chatID: data.chatID,
-                    status: data.status,
-                });
+                const { chatID, status } = data;
+                socket.to(connected[user._id]).emit('typing', { chatID, status });
             });
         });
 

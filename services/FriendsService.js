@@ -4,15 +4,14 @@ exports.addFriend = async (req, res) => {
     const { _id } = req.user;
     const {friendId} = req.body;
     await users.updateOne({ _id }, { '$push': { friends: friendId } });
-    await users.updateOne({ _id: friendId }, { '$push': { friends: user } })
+    await users.updateOne({ _id: friendId }, { '$push': { friends: _id } })
     return res.json({
-        success: true,
-        msg: result,
+        success: true
     });
 }
 
-exports.getFriends = (req, res) => {
+exports.getFriends = async (req, res) => {
     const { _id } = req.user;
-    const friend = users.findOne({ _id }, { friends: 1 }).populate('friends')
+    const friend = await users.findOne({ _id }, { friends: 1 }).populate('friends');
     res.json(friend);
 }

@@ -4,8 +4,12 @@ function login(req, res){
     services.LoginService.login(req, res);
 }
 
-function loginPage(req, res){
-    if(req.isAuthenticated()) return res.redirect('/chatbox');
+async function loginPage(req, res){
+    if(req.isAuthenticated()) {
+        const status = await services.LoginService.status(req, res);
+        if(status === 1) return res.redirect('/');
+        return res.redirect('/chatbox');
+    }
     return res.render('login');
 }
 

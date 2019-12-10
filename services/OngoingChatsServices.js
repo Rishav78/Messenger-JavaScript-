@@ -1,10 +1,8 @@
 const users = require('../model/users');
 
-function getOngoingChats(req, res){
-    const user = req.user._id;
-    users.findOne({
-        _id: user
-    },{activeChats: 1})
+exports.getOngoingChats = async (req, res) => {
+    const { _id } = req.user;
+    const chats = await users.findById(_id, { activeChats: 1 })
         .populate({
             path: 'activeChats',
             select: {
@@ -20,12 +18,6 @@ function getOngoingChats(req, res){
                     status: 1,
                 }
             },
-        })
-        .then((chats) => {
-            res.json(chats.activeChats);
-        })
-}
-
-module.exports = {
-    getOngoingChats,
+        });
+    res.json(chats.activeChats);
 }

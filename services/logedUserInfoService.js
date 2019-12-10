@@ -1,15 +1,7 @@
 const users = require('../model/users');
 
-function logedUserInfo(req, res){
-    let user = req.user._id;
-    users.findOne({
-        _id: user
-    },{password: 0})
-        .then((userInfo) => {
-            res.json(userInfo);
-        })
-}
-
-module.exports = {
-    logedUserInfo,
+exports.logedUserInfo = async (req, res) => {
+    const { _id } = req.user;
+    const user = await users.findById(_id, { password: 0 })
+    res.json(user);
 }

@@ -1,48 +1,33 @@
 let users = require('../model/users');
 
-function searchNewFriend(req, res){
-    let user = req.user;
-    console.log(user.id);
-    users.findOne({_id: user.id},{friends: 1})
-        .then((friends) => {
-            let query = req.body.search ? 
-            {
-                $and: [
-                    {
-                        'phone': {
-                            $ne: user.phone
-                        }
-                    },
-                    {
-                        userName: new RegExp(req.body.search)
-                    },
-                    {
-                        '_id': {
-                            $nin: friends.friends,
-                        },
-                    },
-                ]
-            } : {
-                $and: [
-                    {
-                        'phone': {
-                            $ne: user.phone
-                        }
-                    },
-                    {
-                        '_id': {
-                            $nin: friends.friends,
-                        },
-                    },
-                ]
-            };
-            users.find(query,{firstName:1,lastName: 1,phone:1})
-                .then((friends) => {
-                    res.json(friends);
-                });
-        })
+function buildQuery(req, frnds) {
+    const { phone } = req.user;
+    const { search } = req.body;
+    const { friends } = frnds;
+    const query = [
+        {
+            'phone': {
+                '$ne': phone
+            }
+        },
+        {
+            '_id': {
+                '$nin': friends
+            }
+        }
+    ];
+    if(search) query.push({ userName: new RegExp(search) });
+    return query;
 }
 
-module.exports = {
-    searchNewFriend,
+exports.searchNewFriend = async (req, res) => {
+    const { _id } = req.user;
+    const friends = users.findById(_id , { friends: 1 });
+    const query = buildQuery(req, friends);
+    const usrs =  await users.find({ '$and': query }, {
+        firstName:1,
+        lastName: 1,
+        phone:1,
+    });
+    res.json(usrs);
 }

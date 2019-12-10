@@ -1,43 +1,18 @@
 const users = require('../model/users');
 
-function addFriend(req, res){
-    user = req.user._id;
-    let {friendId} = req.body;
-    users.updateOne({
-        _id: user,
-    },{
-        $push: { friends: friendId }
-    })
-        .then((result) => {
-            console.log(result);
-            users.updateOne({
-                _id: friendId,
-            },{
-                $push: { friends: user }
-            })
-                .then((result) => {
-                    return res.json({
-                        success: true,
-                        msg: result,
-                    });
-                });
-        });
+exports.addFriend = async (req, res) => {
+    const { _id } = req.user;
+    const {friendId} = req.body;
+    await users.updateOne({ _id }, { '$push': { friends: friendId } });
+    await users.updateOne({ _id: friendId }, { '$push': { friends: user } })
+    return res.json({
+        success: true,
+        msg: result,
+    });
 }
 
-function getFriends(req, res){
-    const user = req.user._id;
-    users.findOne({
-        _id: user,
-    },{
-        friends: 1,
-    })
-        .populate('friends')
-        .then((result, err) => {
-            res.json(result);
-        })
-}
-
-module.exports = {
-    addFriend,
-    getFriends,
+exports.getFriends = (req, res) => {
+    const { _id } = req.user;
+    const friend = users.findOne({ _id }, { friends: 1 }).populate('friends')
+    res.json(friend);
 }

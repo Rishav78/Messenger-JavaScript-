@@ -1,10 +1,8 @@
-const chat = require('../model/chats');
+const chats = require('../model/chats');
 
-function getMessages(req, res){
-    const {chatid, page, noOfRecords} = req.body;
-    chat.findOne({
-        _id: chatid,
-    },{messages: 1})
+exports.getMessages = async (req, res) => {
+    const { chatid:_id, page, noOfRecords } = req.body;
+    const messages = await chats.findOne({ _id }, { messages: 1 })
         .populate({
             path: 'messages',
             options: {
@@ -23,11 +21,5 @@ function getMessages(req, res){
                 
             },
         })
-        .then((messages) => {
-            res.json(messages);
-        })
-}
-
-module.exports = {
-    getMessages,
+    res.json(messages);
 }

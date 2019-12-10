@@ -9,12 +9,15 @@ module.exports = (server) => {
     io.on('connection', function(socket){
 
         socket.on('new connection', async (user) => {
-            const { id } = user;
-            connected[id] = socket.id;
-            const res = await services.updateUserStatus.updateUserStatus(id, 1)
+            const { phone, password } = user;
+            const valid = await services.LoginService.login(phone, password);
+            if(!valid.success) return;
+            const { _id } = valid;
+            const res = await services.updateUserStatus.updateUserStatus(_id, 1);
             if(res.success){
+                connected[_id] = socket.id;
                 socket.broadcast.emit('online',{
-                    user: user.id,
+                    user: _id,
                     status: 1,
                 });
                 console.log('connected');

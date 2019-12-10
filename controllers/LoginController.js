@@ -1,7 +1,14 @@
 let services = require('../services');
 
-function login(req, res){
-    services.LoginService.login(req, res);
+async function login(req, res){
+    const { phone, password } = req.body;
+    const valid = await services.LoginService.login(phone, password);
+    if(!valid.success) return res.redirect('/');
+    const { _id } = valid;
+    req.login(_id, (err) => {
+        if(err) return { success: false };
+        return res.redirect('/chatbox');
+    });
 }
 
 async function loginPage(req, res){

@@ -1,7 +1,6 @@
 const chat = require('../model/chats');
 
 function getMessages(req, res){
-    console.log(req.body)
     const {chatid, page, noOfRecords} = req.body;
     chat.findOne({
         _id: chatid,
@@ -25,7 +24,6 @@ function getMessages(req, res){
             },
         })
         .then((messages) => {
-            console.log(messages);
             res.json(messages);
         })
 }

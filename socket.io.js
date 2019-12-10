@@ -11,6 +11,7 @@ module.exports = (server) => {
     
         socket.on('new connection', function(user){
             connected[user.id] = socket.id;
+            console.log(user.id);
             services.updateUserStatus.updateUserStatus(user.id, 1)
                 .then((res) => {
                     if(res.success){
@@ -42,11 +43,11 @@ module.exports = (server) => {
             });
         })
     
-        socket.on('new message', function(data){
+        socket.on('new message', (data) => {
             const {message, chatID, userinfo, members} = data;
             services.saveMessage.saveMessage(message, chatID, userinfo.id);
             members.forEach(element => {
-                console.log(connected[element._id]);
+                console.log(element._id, connected[element._id]);
                 connected[element._id] && io.to(connected[element._id]).emit('new message',data);
             });
         })
@@ -64,12 +65,8 @@ module.exports = (server) => {
             services.addToOngoing.addToOngoing(chat)
              .then((res) => {
                  chat.Members.forEach((value) => {
-                     socket.to(connected[value]).emit('new chat',res.success ? {
-                        success: true,
-                        chat: res.chat,
-                     }:{
-                        success: false,
-                     })
+                     console.log(res);
+                     socket.to(connected[value]).emit('new chat', res)
                  })
              })
         })

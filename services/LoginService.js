@@ -1,34 +1,17 @@
-let users = require('../model/users');
+const users = require('../model/users');
 
-function LoginService(req, res){
-    let {phone, password} = req.body;
-    users.find({
-        phone,
-        password,
-    })
-        .then((user) => {
-            console.log(user)
-            if(user.length>0){ 
-                let userid = user[0]._id;
-                req.login(userid,(err) => {
-                    if(err) return res.render('login',{
-                        success: false,
-                        msg: err,
-                    });
-                    res.render('chatbox',{
-                        success: true,
-                        msg: 'successfully loged in'
-                    })
-                });
-            }else{  
-                res.render('login',{
-                    success: false,
-                    msg: 'no user with this phone number and password exist',
-                });
-            }
-        });
+exports.login = async (req, res) => {
+    const { phone, password } = req.body;
+    const user = await users.findOne({ phone, password });
+    if(!user) return res.render('login',{
+        success: false,
+        msg: 'User doest not exist',
+    });
+    console.log(user);
+    if(user.status === 1) return res.redirect('/');
+    const { _id } = user;
+    req.login(_id, (err) => {
+        if(err) return res.redirect('/');
+        return res.redirect('/chatbox');
+    });
 }
-
-module.exports = {
-    LoginService,
-};

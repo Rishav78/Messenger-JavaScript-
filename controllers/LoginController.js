@@ -1,15 +1,12 @@
 let services = require('../services');
 
 function login(req, res){
-   
-    
-    services.LoginService.LoginService(req, res);
+    services.LoginService.login(req, res);
 }
 
 function loginPage(req, res){
-    req.user ? 
-        res.render('chatbox') :
-    res.render('login');
+    if(req.isAuthenticated()) return res.redirect('/chatbox');
+    return res.render('login');
 }
 
 module.exports = {

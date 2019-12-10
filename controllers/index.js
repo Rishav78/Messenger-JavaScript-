@@ -7,6 +7,7 @@ const AddToOngoingChat = require('./AddToOngoingChatController');
 const ongoingChats = require('./OngoingChatController');
 const getMessages = require('./getMessagesController');
 const logedUserInfo = require('./logedUserInfoController');
+const chatbox = require('./chatboxController');
 
 module.exports = {
     searchNewFriend,
@@ -18,4 +19,5 @@ module.exports = {
     ongoingChats,
     getMessages,
     logedUserInfo,
+    chatbox,
 };
